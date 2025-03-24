@@ -1,5 +1,6 @@
 package u03
 
+import java.util.function.BiFunction
 import scala.annotation.tailrec
 
 object Sequences: // Essentially, generic linkedlists
@@ -27,6 +28,11 @@ object Sequences: // Essentially, generic linkedlists
     def contains[A](l: Sequence[A])(elem: A): Boolean = l match
       case Cons(h, t) => h == elem || contains(t)(elem)
       case Nil()      => false
+
+    @tailrec
+    def foldLeft[A, B](s: Sequence[A])(start: B)(op: BiFunction[B, A, B]): B = s match
+      case Cons(h, t) => foldLeft(t)(op(start, h))(op)
+      case _ => start
 
 @main def trySequences =
   import Sequences.* 

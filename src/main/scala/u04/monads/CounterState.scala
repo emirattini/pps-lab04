@@ -22,6 +22,7 @@ object CounterStateImpl extends CounterState:
   def reset(): State[Counter, Unit] = State(i => (0, ()));
   def get(): State[Counter, Int] = State(i => (i, i));
   def nop(): State[Counter, Unit] = State(i => (i, ()));
+  def set(x: Int): State[Counter, Unit] = State(i => (x, ()))
 
 @main def tryCounterState =
   import Monads.*, Monad.*, States.{*, given}, State.*
