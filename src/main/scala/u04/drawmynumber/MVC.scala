@@ -28,7 +28,7 @@ import u04.drawmynumber.Result.*
   yield events
 
   val controller = for
-    events <- mv(getTopBoundAndMaxAttempts, (x, y) => windowCreation(x, y))
+    events <- mv(getTopBoundAndMaxAttempts, windowCreation)
     _ <- seqN(events.map {
       case Event("GuessButton", x) => mv(guess(x.toInt), res => toLabel(res match
         case (Win, attempts) => "You won with " + attempts + " attempts left. Guess to play again"
