@@ -5,18 +5,20 @@ import java.awt.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+import u04.monads.Event;
+import u04.monads.Event.*;
 
 class SwingFunctionalFacade {
 
     public static interface Frame {
         Frame setSize(int width, int height);
         Frame addButton(String text, String name);
+        Frame addButton(String text, String name, String eventInput);
         Frame addLabel(String text, String name);
-        Frame showToLabel(String text, String name);
         Frame addTextField(String name);
+        Frame showToLabel(String text, String name);
         Frame show();
-        String getText(String name);
-        Supplier<String> events();
+        Supplier<Event> events();
     }
 
     public static Frame createFrame(){
@@ -34,12 +36,12 @@ class SwingFunctionalFacade {
         private final Map<String, JButton> buttons = new HashMap<>();
         private final Map<String, JLabel> labels = new HashMap<>();
         private final Map<String, JTextField> textFields = new HashMap<>();
-        private final LinkedBlockingQueue<String> eventQueue = new LinkedBlockingQueue<>();
-        private final Supplier<String> events = () -> {
+        private final LinkedBlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
+        private final Supplier<Event> events = () -> {
             try{
                 return eventQueue.take();
             } catch (InterruptedException e){
-                return "";
+                return new Event("", "");
             }
         };
         public FrameImpl() {
@@ -54,13 +56,28 @@ class SwingFunctionalFacade {
 
         @Override
         public Frame addButton(String text, String name) {
+            return addButton(text, name, null);
+        }
+
+        @Override
+        public Frame addButton(String text, String name, String eventInput) {
             JButton jb = new JButton(text);
             jb.setActionCommand(name);
             this.buttons.put(name, jb);
             jb.addActionListener(e -> {
                 try {
-                    eventQueue.put(name);
-                } catch (InterruptedException ex){}
+                    if (eventInput != null) {
+                        JTextField inputField = textFields.get(eventInput);
+                        Integer number = Integer.parseInt(inputField.getText());
+                        eventQueue.put(new Event(name, number.toString()));
+                        inputField.setText("");
+                    } else {
+                        eventQueue.put(new Event(name, ""));
+                    }
+                } catch (InterruptedException ex){
+                } catch (NumberFormatException ex) {
+                    System.out.println("Not valid number");
+                }
             });
             this.jframe.getContentPane().add(jb);
             return this;
@@ -74,20 +91,17 @@ class SwingFunctionalFacade {
             return this;
         }
 
-        @Override Frame addTextField(String name) {
-            JTextField jtf = new JTextField(text);
+        @Override
+        public Frame addTextField(String name) {
+            JTextField jtf = new JTextField();
             this.textFields.put(name, jtf);
             this.jframe.getContentPane().add(jtf);
+            jtf.setPreferredSize(new Dimension(50, 25));
             return this;
         }
 
         @Override
-        public String getText(String name) {
-            return this.textFields.get(name).getText();
-        }
-
-        @Override
-        public Supplier<String> events() {
+        public Supplier<Event> events() {
             return events;
         }
 
