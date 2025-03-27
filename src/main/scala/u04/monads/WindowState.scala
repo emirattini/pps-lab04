@@ -30,17 +30,17 @@ object WindowStateImpl extends WindowState:
   def initialWindow: Window = createFrame
 
   def setSize(width: Int, height: Int): State[Window, Unit] = 
-    State(w => ((w.setSize(width, height)), {}))
+    State(w => (w.setSize(width, height), {}))
   def addButton(text: String, name: String): State[Frame, Unit] =
-    State(w => ((w.addButton(text, name)), {}))
+    State(w => (w.addButton(text, name), {}))
   def addButton(text: String, name: String, eventInput: String): State[Window, Unit] =
-    State(w => ((w.addButton(text, name, eventInput)), {}))
+    State(w => (w.addButton(text, name, eventInput), {}))
   def addLabel(text: String, name: String): State[Window, Unit] =
-    State(w => ((w.addLabel(text, name)), {}))
+    State(w => (w.addLabel(text, name), {}))
   def toLabel(text: String, name: String): State[Window, Unit] =
-    State(w => ((w.showToLabel(text, name)), {}))
+    State(w => (w.showToLabel(text, name), {}))
   def addTextField(name: String): State[Window, Unit] =
-    State(w => ((w.addTextField(name), {})))
+    State(w => (w.addTextField(name), {}))
   def show(): State[Window, Unit] =
     State(w => (w.show, {}))
   def exec(cmd: =>Unit): State[Window, Unit] =
@@ -66,10 +66,11 @@ object WindowStateImpl extends WindowState:
   val windowEventsHandling = for
     _ <- windowCreation
     e <- eventStream()
-    _ <- seqN(e.map(_ match
-        case Event("IncButton", _) => toLabel("i", "Label1")
-        case Event("DecButton", _) => toLabel("d", "Label1")
-        case Event("QuitButton", _) => exec(sys.exit())))
+    _ <- seqN(e.map {
+      case Event("IncButton", _) => toLabel("i", "Label1")
+      case Event("DecButton", _) => toLabel("d", "Label1")
+      case Event("QuitButton", _) => exec(sys.exit())
+    })
   yield ()
 
   windowEventsHandling.run(initialWindow)

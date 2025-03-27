@@ -24,13 +24,14 @@ package u04.monads
   yield events
 
   val controller = for
-    events <- mv(get(), i => windowCreation(i.toString()))
-    _ <- seqN(events.map(_ match
-        case Event("IncButton", _) => mv(seq(inc(), get()), i => toLabel(i.toString, "Label1"))
-        case Event("DecButton", _) => mv(seq(dec(), get()), i => toLabel(i.toString, "Label1"))
-        case Event("ResetButton", _) => mv(seq(reset(), get()), i => toLabel(i.toString, "Label1"))
-        case Event("SetButton", x) => mv(seq(set(x.toInt), get()), i => toLabel(i.toString, "Label1"))
-        case Event("QuitButton", _) => mv(nop(), _ => exec(sys.exit()))))
+    events <- mv(get(), i => windowCreation(i.toString))
+    _ <- seqN(events.map {
+      case Event("IncButton", _) => mv(seq(inc(), get()), i => toLabel(i.toString, "Label1"))
+      case Event("DecButton", _) => mv(seq(dec(), get()), i => toLabel(i.toString, "Label1"))
+      case Event("ResetButton", _) => mv(seq(reset(), get()), i => toLabel(i.toString, "Label1"))
+      case Event("SetButton", x) => mv(seq(set(x.toInt), get()), i => toLabel(i.toString, "Label1"))
+      case Event("QuitButton", _) => mv(nop(), _ => exec(sys.exit()))
+    })
   yield ()
 
   controller.run((initialCounter(), initialWindow))

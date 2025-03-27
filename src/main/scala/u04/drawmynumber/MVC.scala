@@ -29,14 +29,15 @@ import u04.drawmynumber.Result.*
 
   val controller = for
     events <- mv(getTopBoundAndMaxAttempts, (x, y) => windowCreation(x, y))
-    _ <- seqN(events.map(_ match
+    _ <- seqN(events.map {
       case Event("GuessButton", x) => mv(guess(x.toInt), res => toLabel(res match
         case (Win, attempts) => "You won with " + attempts + " attempts left. Guess to play again"
         case (Loss, number) => "You loss. Number was " + number + ". Guess to play again"
         case (OutOfBound, topBound) => "Number must be between 0 and " + topBound
         case (Less, attempts) => "Number is less than that. Attempts left: " + attempts
         case (More, attempts) => "Number is more than that. Attempts left:" + attempts,
-        "Label1"))))
+        "Label1"))
+    })
   yield ()
 
   controller.run((initialState(10, 3), initialWindow))
