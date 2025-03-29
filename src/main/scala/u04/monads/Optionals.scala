@@ -15,6 +15,10 @@ object Optionals:
         case Just(a) if (p(a)) => m
         case _                 => Empty()
 
+      def orElse(v: A): A = m match
+        case Just(a) => a
+        case _       => v
+
   // extending Optional to be a Monad!
   given Monad[Optional] with
     import Optional.{Just, Empty}  

@@ -41,6 +41,8 @@ object WindowStateImpl extends WindowState:
     State(w => (w.showToLabel(text, name), {}))
   def addTextField(name: String): State[Window, Unit] =
     State(w => (w.addTextField(name), {}))
+  def getText(name: String): State[Window, String] =
+    State(w => (w, w.getText(name)))
   def show(): State[Window, Unit] =
     State(w => (w.show, {}))
   def exec(cmd: =>Unit): State[Window, Unit] =

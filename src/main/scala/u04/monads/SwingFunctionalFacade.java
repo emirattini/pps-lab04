@@ -17,6 +17,7 @@ class SwingFunctionalFacade {
         Frame addLabel(String text, String name);
         Frame addTextField(String name);
         Frame showToLabel(String text, String name);
+        String getText(String name);
         Frame show();
         Supplier<Event> events();
     }
@@ -109,6 +110,11 @@ class SwingFunctionalFacade {
         public Frame showToLabel(String text, String name) {
             this.labels.get(name).setText(text);
             return this;
+        }
+
+        @Override
+        public String getText(String name) {
+            return textFields.get(name).getText();
         }
 
         @Override
