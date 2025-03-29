@@ -121,8 +121,8 @@ object SchoolModel:
     def emptySchool: School = Nil()
 
     extension (school: School)
-      def courses(): Sequence[String] = school.map((_, c) => c)
-      def teachers(): Sequence[String] = school.map((t, _) => t)
+      def courses(): Sequence[String] = school.map((_, c) => c).distinct()
+      def teachers(): Sequence[String] = school.map((t, _) => t).distinct()
       def setTeacherToCourse(teacher: Teacher, course: Course): School = Cons((teacher, course), school)
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
         school.filter((t, _) => t == teacher)
