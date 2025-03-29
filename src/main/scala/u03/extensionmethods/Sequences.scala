@@ -37,17 +37,19 @@ object Sequences:
         case Cons(h, t) => mapper(h).concat(t.flatMap(mapper))
         case Nil()      => Nil()
 
+      def append(value: A): Sequence[A] = l concat Cons(value, Nil())
+
       def concat(other: Sequence[A]): Sequence[A] = l match
         case Cons(h, t) => Cons(h, t.concat(other))
         case Nil()      => other
 
-      def distinct(s: Sequence[A]): Sequence[A] =
+      def distinct(): Sequence[A] =
         @tailrec
         def iter(s: Sequence[A], seen: Sequence[A]): Sequence[A] = s match
-          case Cons(h, t) if !seen.contains(h) => iter(t, Cons(h, seen))
+          case Cons(h, t) if !seen.contains(h) => iter(t, seen append h)
           case Cons(h, t) => iter(t, seen)
           case _ => seen
-        iter(s, Nil())
+        iter(l, Nil())
 
 
     def of[A](n: Int, a: A): Sequence[A] =

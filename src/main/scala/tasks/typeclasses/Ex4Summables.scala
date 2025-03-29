@@ -28,9 +28,9 @@ object Ex4Summables:
       case Cons(h, t) => foldLeft(t)(op(start, h))(op)
       case _ => start
 
-  def sumAll[A: Summable](seq: Sequence[A]) =
+  def sumAll[A: Summable](seq: Sequence[A]): A =
     val summable = summon[Summable[A]]
-    foldLeft(seq)(summable.zero)((x, y) => summable.sum(x, y))
+    foldLeft(seq)(summable.zero)(summable.sum)
 
   given Summable[Int] with
     def sum(a1: Int, a2: Int): Int = a1 + a2
